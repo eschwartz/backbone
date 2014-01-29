@@ -1323,5 +1323,32 @@
 
   });
 
+  test('Maintain collection length when fetching duplicate parsed ids', 5, function() {
+    var ITERATION_COUNT = 5;
+    var MockModel = Backbone.Model.extend({
+      parse: function(attrs) {
+        attrs.id = attrs.nested.id;
+
+        return attrs;
+      }
+    });
+    var collection = new Backbone.Collection([], {
+      model: MockModel
+    });
+
+    collection.sync = function(action, obj, options) {
+      options.success([
+        { nested: { id: 100 } },
+        { nested: { id: 100 } }
+      ]);
+    };
+
+    // Test is only failing after a few calls to fetch.
+    _.times(ITERATION_COUNT, function() {
+      collection.fetch();
+      equal(collection.length, collection.models.length);
+    });
+  });
+
 
 })();
