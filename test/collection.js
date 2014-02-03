@@ -1323,29 +1323,32 @@
 
   });
 
-  test('Maintain collection length when fetching duplicate parsed ids', 5, function() {
-    var ITERATION_COUNT = 5;
-    var MockModel = Backbone.Model.extend({
-      parse: function(attrs) {
-        attrs.id = attrs.nested.id;
-
-        return attrs;
-      }
-    });
-    var collection = new Backbone.Collection([], {
-      model: MockModel
-    });
-
-    collection.sync = function(action, obj, options) {
-      options.success([
-        { nested: { id: 100 } },
-        { nested: { id: 100 } }
-      ]);
-    };
+  test('Maintain collection length when setting duplicate models, using the `remove:true` option', 5, function() {
+    var ITERATION_COUNT = 5, DUP_ID = 100;
+    var collection = new Backbone.Collection();
+    var duplicateModels = [
+      new Backbone.Model({ id: DUP_ID }),
+      new Backbone.Model({ id: DUP_ID })
+    ];
 
     // Test is only failing after a few calls to fetch.
     _.times(ITERATION_COUNT, function() {
-      collection.fetch();
+      collection.set(duplicateModels, { remove: true });
+      equal(collection.length, collection.models.length);
+    });
+  });
+
+  test('Maintain collection length when setting duplicate models, using the `remove:false` option', 5, function() {
+    var ITERATION_COUNT = 5, DUP_ID = 100;
+    var collection = new Backbone.Collection();
+    var duplicateModels = [
+      new Backbone.Model({ id: DUP_ID }),
+      new Backbone.Model({ id: DUP_ID })
+    ];
+
+    // Test is only failing after a few calls to fetch.
+    _.times(ITERATION_COUNT, function() {
+      collection.set(duplicateModels, { remove: false });
       equal(collection.length, collection.models.length);
     });
   });
