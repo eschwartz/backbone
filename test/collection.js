@@ -1323,5 +1323,39 @@
 
   });
 
+  test('`set` breaks with duplicate model ids, using `remove:true` option', 1, function() {
+    var DUP_ID = 100;
+    var isBreaking = false;
+    var collection = new Backbone.Collection();
+    var modelDupA = new Backbone.Model({ id: DUP_ID });
+    var modelDupB = new Backbone.Model({ id: DUP_ID });
+
+    try {
+      collection.set([modelDupA, modelDupB], { remove: true });
+    }
+    catch (e) {
+      isBreaking = true;
+    }
+
+    equal(isBreaking, true);
+  });
+
+  test('`set` breaks with duplicate model ids, using `remove:false` option', 1, function() {
+    var DUP_ID = 100;
+    var isBreaking = false;
+    var collection = new Backbone.Collection();
+    var modelDupA = new Backbone.Model({ id: DUP_ID });
+    var modelDupB = new Backbone.Model({ id: DUP_ID });
+
+    try {
+      collection.set([modelDupA, modelDupB], { remove: false });
+    }
+    catch (e) {
+      isBreaking = true;
+    }
+
+    equal(isBreaking, true);
+  });
+  
 
 })();
